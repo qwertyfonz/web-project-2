@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h1> Listing: {{ listing.title }}</h1>
+    <img src="{{ listing.imageURL }}">
+    <h3>{{ listing.description }}</h3>
+    <ul>
+        <li>Price: {{ listing.currentBid }}</li>
+    </ul>
+
+    <a href="{% url 'index' %}">Back to the Main Page</a>
+{% endblock %}
