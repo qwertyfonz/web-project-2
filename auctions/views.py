@@ -1,15 +1,18 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.forms import ModelForm
+from django import forms
+from datetime import datetime
 
 from .models import *
 
-
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all()
+        "listings": Listing.objects.all(),
+        "datetime": datetime.now()
     })
 
 
@@ -64,8 +67,36 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-def listing(request, listing_id):
-    listing = Listing.objects.get(id=listing_id)
-    return render(request, "auctions/listing.html", {
-        "listing": listing
+
+def newlisting(request):
+    userForm = ListingForm(request.POST)
+    
+    if request.method == "POST":
+        if userForm.is_valid():
+            form = userForm.save(commit=False)
+            form.user = User.username
+            form.date = datetime.now()
+            form.status = "Active"
+            form.save()
+            return redirect('listing', pk=form.pk)
+    else:
+        form = ListingForm()
+
+    return render(request, "auctions/newlisting.html", {
+        "listingForm": ListingForm()
     })
+"""
+def categories(request):
+
+def watchlist(request):
+"""
+
+def listing(request, pk):
+    listing = Listing.objects.get(id=pk)
+    return render(request, "auctions/listing.html", {
+        "listing": listing,
+        "user": User.username,
+        "datetime": datetime.now()
+    })
+
+

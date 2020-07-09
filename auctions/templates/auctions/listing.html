@@ -2,10 +2,14 @@
 
 {% block body %}
     <h1> Listing: {{ listing.title }}</h1>
-    <img src="{{ listing.imageURL }}">
-    <h3>{{ listing.description }}</h3>
+    <img src="{{ listing.imageURL }}" style="max-width: 75%; max-height: 75%">
+    <p>{{ listing.description }}</p>
+    <h2>${{ listing.currentBid }} USD</h2>
+    <p> Details:</p>
     <ul>
-        <li>Price: {{ listing.currentBid }}</li>
+        <li>Listed by: {{ user }} on {{ datetime }}</li>
+        
+        <li>Category: {{ listing.category }}</li>
     </ul>
 
     <a href="{% url 'index' %}">Back to the Main Page</a>
