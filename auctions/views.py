@@ -3,16 +3,25 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.forms import ModelForm
-from django import forms
 from datetime import datetime
 
+from .forms import *
 from .models import *
+
+categoriesDict = {
+    "FA": "Fashion",
+    'FO': 'Food',
+    'BO': 'Books',
+    'TO': 'Toys',
+    'EL': 'Electronics',
+    'HG': 'Home & Garden',
+    'SG': "Sporting Goods",
+    'OT': 'Other'
+}
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all(),
-        "datetime": datetime.now()
+        "listings": Listing.objects.all()
     })
 
 
@@ -73,30 +82,48 @@ def newlisting(request):
     
     if request.method == "POST":
         if userForm.is_valid():
-            form = userForm.save(commit=False)
-            form.user = User.username
-            form.date = datetime.now()
-            form.status = "Active"
-            form.save()
-            return redirect('listing', pk=form.pk)
+            userForm = userForm.save(commit=False)
+            userForm.createdUser    = request.user
+            userForm.createdDate    = datetime.now()
+            userForm.status         = "Active"
+            userForm.save()
+            return redirect('listing', pk=userForm.pk)
     else:
-        form = ListingForm()
+        userForm = ListingForm()
 
     return render(request, "auctions/newlisting.html", {
         "listingForm": ListingForm()
     })
-"""
-def categories(request):
 
+def categories(request):
+    categoryNames = categoriesDict.values()
+    return render(request, "auctions/categories.html", {
+        "categories": categoryNames
+    })
+
+def getDictKey(category):
+    for key, value in categoriesDict.items():
+        if category == value:
+            return key
+
+def categories_detail(request, category):
+    categoryType = getDictKey(category)
+    return render(request, "auctions/categories_detail.html", {
+        "listings": Listing.objects.all(),
+        "category": category,
+        "categoryType": categoryType
+    })
+
+"""
 def watchlist(request):
 """
 
-def listing(request, pk):
-    listing = Listing.objects.get(id=pk)
+def listing(request, pk):    
+    listing = Listing.objects.get(id=pk) 
     return render(request, "auctions/listing.html", {
-        "listing": listing,
-        "user": User.username,
-        "datetime": datetime.now()
+        "listing"   : listing,
+        "user"      : listing.createdUser,
+        "datetime"  : listing.createdDate
     })
 
 
