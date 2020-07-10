@@ -1,14 +1,31 @@
 {% extends "auctions/layout.html" %}
 
-
 {% block body %}
     <h1> Listing: {{ listing.title }}</h1>
+    
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'watchlist' %}">
+        {% csrf_token %}
+        <input type="hidden" name="listing.id" value="{{ listing.id }}">
+        <input type="submit" value="Add to Watchlist" class="btn btn-success">
+    </form>
+    {% endif %}
+
     <img src="{{ listing.imageURL }}" style="max-width: 75%; max-height: 75%">
+
     <p>{{ listing.description }}</p>
     <h2>${{ listing.currentBid }} USD</h2>
+
+    {% if user.is_authenticated %}
+    <form type="post" action="">
+        {% csrf_token %}
+        <input type="submit" name="bidvalue">
+    </form>
+    {% endif %}
+    
     <p> Details:</p>
     <ul>
-        <li>Listed by: {{ user }} on {{ datetime }}</li>
+        <li>Listed by: {{ createdUser }} on {{ datetime }}</li>
         
         {% if listing.category != None %}
         <li>Category: {{ listing.get_category_display }}</li>

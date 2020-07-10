@@ -8,7 +8,7 @@
     {% for listing in listings %}
         {% if listing.status == "Active" %}
         <a href="{% url 'listing' listing.id %}">
-            <tr style="border: 1px grey; border-collapse: collapse; border-style: ridge">
+            <tr style="border: 1px grey; border-style: ridge">
                 
                 <td>
                     <a href="{% url 'listing' listing.id %}">

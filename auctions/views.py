@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -114,16 +115,38 @@ def categories_detail(request, category):
         "categoryType": categoryType
     })
 
-"""
+
+@login_required
 def watchlist(request):
-"""
+    loggedInUser = request.user
+    if request.method == "POST":
+        listingID = request.POST.get("listing.id")
+        currentListing = Listing.objects.get(id=int(listingID))
+        alreadyExists = Watchlist.objects.filter(username=loggedInUser, listing=currentListing)
+        
+        if not alreadyExists:
+            saveWatchlist = Watchlist.objects.create()
+            saveWatchlist.username = loggedInUser
+            saveWatchlist.listing = currentListing
+            saveWatchlist.save()
+        
+    filteredWatchlist = list(Watchlist.objects.filter(username=loggedInUser))
+    userWatchlist = []
+    for watchlist in filteredWatchlist:
+        userWatchlist.append(watchlist.listing)
+
+    return render(request, "auctions/watchlist.html", {
+        "userWatchlist": userWatchlist
+    })
+    
+
 
 def listing(request, pk):    
     listing = Listing.objects.get(id=pk) 
     return render(request, "auctions/listing.html", {
-        "listing"   : listing,
-        "user"      : listing.createdUser,
-        "datetime"  : listing.createdDate
+        "listing"       : listing,
+        "createdUser"   : listing.createdUser,
+        "datetime"      : listing.createdDate
     })
 
 

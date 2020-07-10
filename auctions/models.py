@@ -31,16 +31,16 @@ class Listing(models.Model):
 
 class Bid(models.Model):
     username    = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    listingID   = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
+    listing     = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
     bidAmount   = models.DecimalField(decimal_places=2, max_digits=15)
 
 
 class Comment(models.Model):
     username    = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    listingID   = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
+    listing     = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
     comment     = models.CharField(max_length=200)
     date        = models.DateTimeField()
 
 class Watchlist(models.Model):
     username    = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    listingID   = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
+    listing     = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
