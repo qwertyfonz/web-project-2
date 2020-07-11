@@ -214,6 +214,7 @@ def newComment(request, listing):
             commentForm.listing  = listing
             commentForm.date     = datetime.now()
             commentForm.save()
+    return redirect('listing', pk=listing.pk)
     
 
 # All functions to create a listing page    
