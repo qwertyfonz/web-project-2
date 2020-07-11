@@ -9,9 +9,9 @@ class User(AbstractUser):
 class Listing(models.Model):
     title       = models.CharField(max_length=64)
     description = models.CharField(max_length=200)
-    currentBid  = models.DecimalField(decimal_places=2, max_digits=15, null=True)
+    initialBid  = models.DecimalField(decimal_places=2, max_digits=15, null=True)
     imageURL    = models.URLField(blank=True)
-    status      = models.CharField(max_length=1, null=True)
+    status      = models.CharField(max_length=20, null=True)
     createdUser = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     createdDate = models.DateTimeField(null=True)
 
@@ -32,13 +32,13 @@ class Listing(models.Model):
 class Bid(models.Model):
     username    = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     listing     = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
-    bidAmount   = models.DecimalField(decimal_places=2, max_digits=15)
+    bidAmount   = models.DecimalField(decimal_places=2, max_digits=15, null=True)
 
 
 class Comment(models.Model):
     username    = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     listing     = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
-    comment     = models.CharField(max_length=200)
+    comment     = models.CharField(max_length=500)
     date        = models.DateTimeField()
 
 class Watchlist(models.Model):

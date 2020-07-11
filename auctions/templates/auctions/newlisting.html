@@ -1,0 +1,17 @@
+{% extends "auctions/layout.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+<form method="post" action="">
+    {% csrf_token %}
+
+    <div class="form-group col-md-6 mb-0">
+        {{ listingForm|crispy }}
+        
+        <input type="submit" value="Submit" class="btn btn-success">
+    </div>
+</form>
+
+
+{% endblock %}

@@ -1,15 +1,14 @@
 {% extends "auctions/layout.html" %}
 
-
 {% block body %}
-    <h2>Watchlist</h2>
+<h2>Closed Listings</h2>
 
     <table>
     
-    {% for listing in userWatchlist %}
-        {% if listing.status == "Active" %}
+    {% for listing in listings %}
+        {% if listing.status == "Closed" %}
         <a href="{% url 'listing' listing.id %}">
-            <tr style="border: 1px grey; border-collapse: collapse; border-style: ridge">
+            <tr style="border: 1px grey; border-style: ridge">
                 
                 <td>
                     <a href="{% url 'listing' listing.id %}">
@@ -30,7 +29,6 @@
         {% endif %}
     {% endfor %}
     </table>
+
+
 {% endblock %}
-
-
-

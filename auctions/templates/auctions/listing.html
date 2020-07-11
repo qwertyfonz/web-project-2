@@ -1,28 +1,75 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h1> Listing: {{ listing.title }}</h1>
+
+<!--If user enters invalid bid amount, display error popup messages-->
+{% if error1 %}
+    <script>alert("Bid must be at least equal to initial bid.")</script>
+{% elif error2 %}
+    <script>alert("Bid must be higher than current bid.")</script>
+{% endif %}
+
+    <h1>Listing: {{ listing.title }}</h1>
     
+<!--If user is logged in and listing is active-->
     {% if user.is_authenticated %}
-    <form method="post" action="{% url 'watchlist' %}">
+        {% if listing.status == "Active" %}
+
+            <!--If item is not already on watchlist, allow user to add to watchlist-->
+            {% if watchlistFlag == False and loggedInUser != createdUser %}
+            <form method="post" action="{% url 'watchlist' %}">
+                {% csrf_token %}
+                <input type="hidden" name="listing.id" value="{{ listing.id }}">
+                <input type="submit" value="Add to Watchlist" class="btn btn-success">
+            </form>
+            {% endif %}
+
+            <!--If item is already on watchlist, allow user to remove from watchlist-->
+            {% if watchlistFlag == True %}
+            <form method="post" action="{% url 'watchlist' %}">
+                {% csrf_token %}
+                <input type="hidden" name="listing.id" value="{{ listing.id }}">
+                <input type="submit" value="Remove from Watchlist" class="btn btn-danger">
+            </form>
+            {% endif %}
+
+            <!--If logged in user is the one who posted listing, allow user to close the listing-->
+            {% if loggedInUser == createdUser %}
+            <form method="post" action="{% url 'closedlistings' %}">
+                {% csrf_token %}
+                <input type="hidden" name="listing.id" value="{{ listing.id }}">
+                <input type="submit" value="Close Auction" class="btn btn-danger" name="closeauction">
+            </form>
+            {% endif %}
+        
+        <!--If the listing is closed-->
+        {% elif listing.status == "Closed" %}
+            <br>
+            <h2>This auction has closed.</h2>
+            <!--Display if logged in user has won the auction-->
+            {% if loggedInUser == highestBidder %}
+                <h2>Congratulations, you have won the auction!</h2>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+    <br>
+    <img src="{{ listing.imageURL }}" style="max-width: 500px; max-height: 500px">
+
+    <p><i>{{ listing.description }}</i></p>
+    <h2>Current Bid Price: ${{ listing.initialBid }} USD</h2>
+
+    <!--Allow logged in user to submit new bid-->
+    {% if user.is_authenticated and loggedInUser != createdUser and listing.status == "Active" %}
+    <form method="post">
         {% csrf_token %}
-        <input type="hidden" name="listing.id" value="{{ listing.id }}">
-        <input type="submit" value="Add to Watchlist" class="btn btn-success">
+        <input type="hidden" name="id" value="{{ listing.id }}">
+        {{ bidForm }}
+        <input type="submit" name="bidvalue" value="Place Your Bid" class="btn btn-primary">
     </form>
     {% endif %}
 
-    <img src="{{ listing.imageURL }}" style="max-width: 75%; max-height: 75%">
-
-    <p>{{ listing.description }}</p>
-    <h2>${{ listing.currentBid }} USD</h2>
-
-    {% if user.is_authenticated %}
-    <form type="post" action="">
-        {% csrf_token %}
-        <input type="submit" name="bidvalue">
-    </form>
-    {% endif %}
-    
+    <br>
     <p> Details:</p>
     <ul>
         <li>Listed by: {{ createdUser }} on {{ datetime }}</li>
@@ -32,5 +79,25 @@
         {% endif %}
     </ul>
 
-    <a href="{% url 'index' %}">Back to the Main Page</a>
+    <br>
+    <h2>Comments</h2>
+    <!--Allow logged in user to submit comments-->
+    {% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{ listing.id }}">
+        {{ commentForm }}
+        <input type="submit" value="Submit Comment" class="btn btn-primary">
+    </form>
+    {% endif %}
+
+    <br>
+    <!--Display all comments on a listing-->
+    {% for commentObject in allComments %}
+        <ul>
+            {{ commentObject.comment }} 
+            <br>
+            <i>Posted by {{ commentObject.username }} on {{ commentObject.date }}</i>
+        </ul>
+    {% endfor %}
 {% endblock %}
